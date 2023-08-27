@@ -28,6 +28,11 @@ public class WebSecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        /*
+        Needed, otherwise Access to XMLHttpRequest at 'http://localhost:8080/public/numberOfUsers' from origin
+        'http://localhost:3000' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on
+        the requested resource.
+         */
         return http
                 .authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
                         .requestMatchers(HttpMethod.GET, "/api/books", "/api/books/**").hasAnyAuthority(ADMIN, USER)
@@ -51,8 +56,13 @@ public class WebSecurityConfig {
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource(@Value("${app.cors.allowed-origins}") List<String> allowedOrigins) {
+        /*
+        Needed, else Access to XMLHttpRequest at 'http://localhost:8080/public/numberOfUsers' from origin
+        'http://localhost:3000' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on
+         the requested resource.
+         */
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowCredentials(true);
+        configuration.setAllowCredentials(false); // test?
         configuration.setAllowedOrigins(allowedOrigins);
         configuration.addAllowedMethod("*");
         configuration.addAllowedHeader("*");
