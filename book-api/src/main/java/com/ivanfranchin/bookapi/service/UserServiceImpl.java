@@ -1,6 +1,5 @@
 package com.ivanfranchin.bookapi.service;
 
-import com.ivanfranchin.bookapi.exception.UserNotFoundException;
 import com.ivanfranchin.bookapi.model.User;
 import com.ivanfranchin.bookapi.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -40,7 +39,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User validateAndGetUserByUsername(String username) {
         return getUserByUsername(username)
-                .orElseThrow(() -> new UserNotFoundException(String.format("User with username %s not found", username)));
+                .orElseThrow(() -> new RuntimeException(String.format("User with username %s not found", username)));
     }
 
     @Override

@@ -1,6 +1,5 @@
 package com.ivanfranchin.bookapi.rest;
 
-import com.ivanfranchin.bookapi.exception.DuplicatedUserInfoException;
 import com.ivanfranchin.bookapi.model.User;
 import com.ivanfranchin.bookapi.rest.dto.AuthResponse;
 import com.ivanfranchin.bookapi.rest.dto.LoginRequest;
@@ -40,10 +39,10 @@ public class AuthController {
     @PostMapping("/signup")
     public AuthResponse signUp(@Valid @RequestBody SignUpRequest signUpRequest) {
         if (userService.hasUserWithUsername(signUpRequest.getUsername())) {
-            throw new DuplicatedUserInfoException(String.format("Username %s is already been used", signUpRequest.getUsername()));
+            throw new RuntimeException(String.format("Username %s is already been used", signUpRequest.getUsername()));
         }
         if (userService.hasUserWithEmail(signUpRequest.getEmail())) {
-            throw new DuplicatedUserInfoException(String.format("Email %s is already been used", signUpRequest.getEmail()));
+            throw new RuntimeException(String.format("Email %s is already been used", signUpRequest.getEmail()));
         }
 
         User user = userService.saveUser(createUser(signUpRequest));
