@@ -1,13 +1,7 @@
 package com.ivanfranchin.bookapi.rest;
 
-import com.ivanfranchin.bookapi.mapper.BookMapper;
 import com.ivanfranchin.bookapi.model.Book;
-import com.ivanfranchin.bookapi.rest.dto.BookDto;
-import com.ivanfranchin.bookapi.rest.dto.CreateBookRequest;
 import com.ivanfranchin.bookapi.service.BookService;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -21,7 +15,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @RestController
@@ -29,27 +22,22 @@ import java.util.stream.Collectors;
 public class BookController {
 
     private final BookService bookService;
-    private final BookMapper bookMapper;
 
     @GetMapping
-    public List<BookDto> getBooks(@RequestParam(value = "text", required = false) String text) {
-        List<Book> books = (text == null) ? bookService.getBooks() : bookService.getBooksContainingText(text);
-        return books.stream()
-                .map(bookMapper::toBookDto)
-                .collect(Collectors.toList());
+    public List<Book> getBooks(@RequestParam(value = "text", required = false) String text) {
+        return (text == null) ? bookService.getBooks() : bookService.getBooksContainingText(text);
     }
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public BookDto createBook(@Valid @RequestBody CreateBookRequest createBookRequest) {
-        Book book = bookMapper.toBook(createBookRequest);
-        return bookMapper.toBookDto(bookService.saveBook(book));
+    public Book createBook(@RequestBody Book book) {
+        return bookService.saveBook(book);
     }
 
     @DeleteMapping("/{isbn}")
-    public BookDto deleteBook(@PathVariable String isbn) {
+    public Book deleteBook(@PathVariable String isbn) {
         Book book = bookService.validateAndGetBook(isbn);
         bookService.deleteBook(book);
-        return bookMapper.toBookDto(book);
+        return book;
     }
 }
