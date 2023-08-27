@@ -23,8 +23,6 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.ivanfranchin.bookapi.config.SwaggerConfig.BASIC_AUTH_SECURITY_SCHEME;
-
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/books")
@@ -33,7 +31,6 @@ public class BookController {
     private final BookService bookService;
     private final BookMapper bookMapper;
 
-    @Operation(security = {@SecurityRequirement(name = BASIC_AUTH_SECURITY_SCHEME)})
     @GetMapping
     public List<BookDto> getBooks(@RequestParam(value = "text", required = false) String text) {
         List<Book> books = (text == null) ? bookService.getBooks() : bookService.getBooksContainingText(text);
@@ -42,7 +39,6 @@ public class BookController {
                 .collect(Collectors.toList());
     }
 
-    @Operation(security = {@SecurityRequirement(name = BASIC_AUTH_SECURITY_SCHEME)})
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     public BookDto createBook(@Valid @RequestBody CreateBookRequest createBookRequest) {
@@ -50,7 +46,6 @@ public class BookController {
         return bookMapper.toBookDto(bookService.saveBook(book));
     }
 
-    @Operation(security = {@SecurityRequirement(name = BASIC_AUTH_SECURITY_SCHEME)})
     @DeleteMapping("/{isbn}")
     public BookDto deleteBook(@PathVariable String isbn) {
         Book book = bookService.validateAndGetBook(isbn);
