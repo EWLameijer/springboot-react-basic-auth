@@ -3,10 +3,6 @@ package com.ivanfranchin.bookapi.rest;
 import com.ivanfranchin.bookapi.model.User;
 import com.ivanfranchin.bookapi.security.WebSecurityConfig;
 import com.ivanfranchin.bookapi.service.UserService;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,37 +22,17 @@ public class AuthController {
     public record AuthResponse(Long id, String name, String role) {
     }
 
-    @Data
-    public static class LoginRequest {
-
-        @NotBlank
-        private String username;
-
-        @NotBlank
-        private String password;
+    private record LoginRequest(String username, String password) {
     }
 
-    @Data
-    public static class SignUpRequest {
-
-        @NotBlank
-        private String username;
-
-        @NotBlank
-        private String password;
-
-        @NotBlank
-        private String name;
-
-        @Email
-        private String email;
+    private record SignUpRequest(String username, String password, String name, String email) {
     }
 
     private final UserService userService;
 
     @PostMapping("/authenticate")
-    public ResponseEntity<AuthResponse> login(@Valid @RequestBody LoginRequest loginRequest) {
-        Optional<User> userOptional = userService.validUsernameAndPassword(loginRequest.getUsername(), loginRequest.getPassword());
+    public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest loginRequest) {
+        Optional<User> userOptional = userService.validUsernameAndPassword(loginRequest.username, loginRequest.password);
         if (userOptional.isPresent()) {
             User user = userOptional.get();
             return ResponseEntity.ok(new AuthResponse(user.getId(), user.getName(), user.getRole()));
@@ -67,11 +43,11 @@ public class AuthController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/signup")
     public AuthResponse signUp(@RequestBody SignUpRequest signUpRequest) {
-        if (userService.hasUserWithUsername(signUpRequest.getUsername())) {
-            throw new RuntimeException(String.format("Username %s is already been used", signUpRequest.getUsername()));
+        if (userService.hasUserWithUsername(signUpRequest.username)) {
+            throw new RuntimeException(String.format("Username %s is already been used", signUpRequest.username));
         }
-        if (userService.hasUserWithEmail(signUpRequest.getEmail())) {
-            throw new RuntimeException(String.format("Email %s is already been used", signUpRequest.getEmail()));
+        if (userService.hasUserWithEmail(signUpRequest.email)) {
+            throw new RuntimeException(String.format("Email %s is already been used", signUpRequest.email));
         }
 
         User user = userService.saveUser(createUser(signUpRequest));
@@ -80,10 +56,10 @@ public class AuthController {
 
     private User createUser(SignUpRequest signUpRequest) {
         User user = new User();
-        user.setUsername(signUpRequest.getUsername());
-        user.setPassword(signUpRequest.getPassword());
-        user.setName(signUpRequest.getName());
-        user.setEmail(signUpRequest.getEmail());
+        user.setUsername(signUpRequest.username);
+        user.setPassword(signUpRequest.password);
+        user.setName(signUpRequest.name);
+        user.setEmail(signUpRequest.email);
         user.setRole(WebSecurityConfig.USER);
         return user;
     }

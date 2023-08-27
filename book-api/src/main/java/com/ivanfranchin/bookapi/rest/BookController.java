@@ -3,6 +3,7 @@ package com.ivanfranchin.bookapi.rest;
 import com.ivanfranchin.bookapi.model.Book;
 import com.ivanfranchin.bookapi.service.BookService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,11 +22,12 @@ import java.util.List;
 @RequestMapping("/api/books")
 public class BookController {
 
+    @Autowired
     private final BookService bookService;
 
     @GetMapping
     public List<Book> getBooks(@RequestParam(value = "text", required = false) String text) {
-        return (text == null) ? bookService.getBooks() : bookService.getBooksContainingText(text);
+        return text == null ? bookService.getBooks() : bookService.getBooksContainingText(text);
     }
 
     @ResponseStatus(HttpStatus.CREATED)
