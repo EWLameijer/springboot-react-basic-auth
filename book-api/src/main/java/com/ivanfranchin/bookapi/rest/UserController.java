@@ -1,12 +1,9 @@
 package com.ivanfranchin.bookapi.rest;
 
-import com.ivanfranchin.bookapi.mapper.UserMapper;
 import com.ivanfranchin.bookapi.model.User;
 import com.ivanfranchin.bookapi.rest.dto.UserDto;
 import com.ivanfranchin.bookapi.security.CustomUserDetails;
 import com.ivanfranchin.bookapi.service.UserService;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -24,29 +21,26 @@ import java.util.stream.Collectors;
 public class UserController {
 
     private final UserService userService;
-    private final UserMapper userMapper;
 
     @GetMapping("/me")
-    public UserDto getCurrentUser(@AuthenticationPrincipal CustomUserDetails currentUser) {
-        return userMapper.toUserDto(userService.validateAndGetUserByUsername(currentUser.getUsername()));
+    public User getCurrentUser(@AuthenticationPrincipal CustomUserDetails currentUser) {
+        return userService.validateAndGetUserByUsername(currentUser.getUsername());
     }
 
     @GetMapping
-    public List<UserDto> getUsers() {
-        return userService.getUsers().stream()
-                .map(userMapper::toUserDto)
-                .collect(Collectors.toList());
+    public List<User> getUsers() {
+        return userService.getUsers();
     }
 
     @GetMapping("/{username}")
-    public UserDto getUser(@PathVariable String username) {
-        return userMapper.toUserDto(userService.validateAndGetUserByUsername(username));
+    public User getUser(@PathVariable String username) {
+        return userService.validateAndGetUserByUsername(username);
     }
 
     @DeleteMapping("/{username}")
-    public UserDto deleteUser(@PathVariable String username) {
+    public User deleteUser(@PathVariable String username) {
         User user = userService.validateAndGetUserByUsername(username);
         userService.deleteUser(user);
-        return userMapper.toUserDto(user);
+        return user;
     }
 }
