@@ -1,12 +1,12 @@
 package com.ivanfranchin.bookapi.rest;
 
 import com.ivanfranchin.bookapi.model.User;
-import com.ivanfranchin.bookapi.rest.dto.AuthResponse;
-import com.ivanfranchin.bookapi.rest.dto.LoginRequest;
-import com.ivanfranchin.bookapi.rest.dto.SignUpRequest;
 import com.ivanfranchin.bookapi.security.WebSecurityConfig;
 import com.ivanfranchin.bookapi.service.UserService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +23,35 @@ import java.util.Optional;
 @RequestMapping("/auth")
 public class AuthController {
 
+    public record AuthResponse(Long id, String name, String role) {
+    }
+
+    @Data
+    public static class LoginRequest {
+
+        @NotBlank
+        private String username;
+
+        @NotBlank
+        private String password;
+    }
+
+    @Data
+    public static class SignUpRequest {
+
+        @NotBlank
+        private String username;
+
+        @NotBlank
+        private String password;
+
+        @NotBlank
+        private String name;
+
+        @Email
+        private String email;
+    }
+
     private final UserService userService;
 
     @PostMapping("/authenticate")
@@ -37,7 +66,7 @@ public class AuthController {
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/signup")
-    public AuthResponse signUp(@Valid @RequestBody SignUpRequest signUpRequest) {
+    public AuthResponse signUp(@RequestBody SignUpRequest signUpRequest) {
         if (userService.hasUserWithUsername(signUpRequest.getUsername())) {
             throw new RuntimeException(String.format("Username %s is already been used", signUpRequest.getUsername()));
         }

@@ -1,7 +1,6 @@
 package com.ivanfranchin.bookapi.rest;
 
 import com.ivanfranchin.bookapi.model.User;
-import com.ivanfranchin.bookapi.rest.dto.UserDto;
 import com.ivanfranchin.bookapi.security.CustomUserDetails;
 import com.ivanfranchin.bookapi.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @RestController
